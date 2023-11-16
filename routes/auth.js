@@ -30,7 +30,6 @@ router.post('/login', async (req, res) => {
     const user = await User.findOne({ email: email });
 
     const isPasswordValid = user && await bcrypt.compare(password, user.password);
-    console.log(isPasswordValid)
 
     if (!user || !isPasswordValid) {
         return res.json({ error: "wrong credentials!" });
