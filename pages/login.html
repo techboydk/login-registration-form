@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        section {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #2d9985;
+        }
+
+        form {
+            padding: 2rem;
+            background: darkseagreen;
+            border-radius: .5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .input_container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .name_container,
+        .email_container,
+        .password_container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        input {
+            outline: none;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 16px;
+            background: transparent;
+            border: 1px solid #333;
+            color: #000;
+        }
+
+        button {
+            outline: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            user-select: none;
+            font-weight: bold;
+            background: #00c76b;
+            border: 1px solid #000;
+        }
+
+        .loggedIn {
+            font-size: large;
+            font-weight: bold;
+            color: aqua;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="form">
+        <form id="login-form">
+            <h1>Login Form</h1>
+            <div class="error-message" id="error-message"></div>
+            <div class="input_container">
+                <div class="email_container">
+                    <label for="email">Email</label>
+                    <input type="email" autocomplete="off" value="" name="email" id="email"
+                        placeholder="Enter Your email..." required>
+                </div>
+                <div class="password_container">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" value="" id="password" placeholder="password..." required>
+                </div>
+                <div class="login">
+                    <p>Don't have an account? <a href="/auth/register">register</a></p>
+                </div>
+            </div>
+            <button type="submit">Login</button>
+            <div id="loading-indicator" style="display: none;">Loading...</div>
+        </form>
+        <div class="loggedIn" id="loggedIn"></div>
+    </section>
+
+
+</body>
+<script>
+    const form = document.getElementById("login-form");
+    form.addEventListener("submit", registerUser);
+
+    async function registerUser(event) {
+        event.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        const result = await fetch('/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email,
+                password,
+            })
+        }).then(res => res.json());
+
+        if (result.status === 'ok') {
+            localStorage.setItem('userData', JSON.stringify(result.data));
+            window.location.href = result.redirect;
+        } else {
+            const errorContainer = document.getElementById('error-message');
+            errorContainer.innerHTML = result.error;
+            console.log(result.error)
+        }
+    }
+
+</script>
+
+</html>
